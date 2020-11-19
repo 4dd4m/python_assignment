@@ -1,0 +1,13 @@
+#Listing showing sample book details 
+#AUTHOR, TITLE, FORMAT, PUBLISHER, COST?, STOCK, GENRE
+P.G. Wodehouse, Right Ho Jeeves, hb, Penguin, 10.99, 5, fiction
+A. Pais, Subtle is the Lord, pb, OUP, 12.99, 2, biography
+A. Calaprice, The Quotable Einstein, pb, PUP, 7.99, 6, science
+M. Faraday, The Chemical History of a Candle, pb, Cherokee, 5.99, 1, science
+C. Smith, Energy and Empire, hb, CUP, 60, 1, science
+J. Herschel, Popular Lectures, hb, CUP, 25, 1, science
+C.S. Lewis, The Screwtape Letters, pb, Fount, 6.99, 16, religion
+J.R.R. Tolkein, The Hobbit, pb, Harper Collins, 7.99, 12, fiction
+C.S. Lewis, The Four Loves, pb, Fount, 6.99, 7, religion
+E. Heisenberg, Inner Exile, hb, Birkhauser, 24.95, 1, biography
+G.G. Stokes, Natural Theology, hb, Black, 30, 1, religion

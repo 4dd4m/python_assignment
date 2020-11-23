@@ -18,6 +18,7 @@ class Book:
         return "{0:9}|{1:14}|{2:32}|{3:2}|{4:14}|{5:5}|{6:2}|".format(self.genre, self.author, self.title, self.coverType, self.publisher, self.cost,
         self.stock)
 
+
 class Store:
     #Store object, store books, and manipulates them
     def __init__(self):

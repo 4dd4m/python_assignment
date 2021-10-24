@@ -1,4 +1,6 @@
 from operator import attrgetter
+import numpy as np
+import matplotlib.pyplot as plt
 
 class Book:
     def __init__(self,bookDetails):
@@ -32,35 +34,40 @@ class Store:
 
     def importBooks(self, filename='books.txt', filterOut=['#','\n']):
         #Open the file, iterate, calls self.addBook()
-        with open(filename, 'r') as f:
-                #For every line in the file
-                for line in f:
-                    #If line contains commnets or \n, it doesnt count
-                    if line[0] not in filterOut:
-                        #Strip the whitespaces from the line start and end
-                        line = line.rstrip()
-                        line = line.lstrip()
-                        #Create a list along commas
-                        bookDetails = line.split(',')
-                        counter = 0
-                        #Iterate through the details
-                        for i in range(len(bookDetails)):
-                            #strip out the whitespace from float ' 10.00'
-                            bookDetails[counter] = bookDetails[counter].lstrip()
-                            bookDetails[counter] = bookDetails[counter].rstrip()
-                            counter += 1
-                        #create a book
-                        bookObject = Book(bookDetails)
-                        #Add them to the store
-                        self.addBook(bookObject)
-        #Update the total number of books
-        self._setTotalNumOfBooks()
-        #Update the Store's total value
-        self._setTotalValueOfBooks()
-        self._setAveragePriceOfBooks()
+        try:
+            with open(filename, 'r') as f:
+                    #For every line in the file
+                    for line in f:
+                        #If line contains commnets or \n, it doesnt count
+                        if line[0] not in filterOut:
+                            #Strip the whitespaces from the line start and end
+                            line = line.rstrip()
+                            line = line.lstrip()
+                            #Create a list along commas
+                            bookDetails = line.split(',')
+                            counter = 0
+                            #Iterate through the details
+                            for i in range(len(bookDetails)):
+                                #strip out the whitespace from float ' 10.00'
+                                bookDetails[counter] = bookDetails[counter].lstrip()
+                                bookDetails[counter] = bookDetails[counter].rstrip()
+                                counter += 1
+                            #create a book
+                            bookObject = Book(bookDetails)
+                            #Add them to the store
+                            self.addBook(bookObject)
+            #Update the total number of books
+            self._setTotalNumOfBooks()
+            #Update the Store's total value
+            self._setTotalValueOfBooks()
+            self._setAveragePriceOfBooks()
+        except FileNotFoundError:
+            print('{0} not found, cannot import'.format(filename))
+        except Exception as e:
+            print('Ohhh, no: '+e+' Import aborted')
 
     def addBook(self, Book):
-        #Adds a book into the store Either from class or manual
+        #Adds a book into the store Either from cl4ss or manual
         self._books.append(Book)
         if Book.genre not in self._genresInStore:
             self._genresInStore[Book.genre] = 1
@@ -69,6 +76,7 @@ class Store:
         self._books.sort( key = attrgetter('title'), reverse=False)
 
     def userAddBook(self):
+        #Task 5
         #Interface to the user to Add a book
         print("------------")
         print("Add a Book: ")
@@ -96,7 +104,7 @@ class Store:
             #Update the Store's total value
             self._setTotalValueOfBooks()
             self._setAveragePriceOfBooks()
-            print("Total title now: {0}, AvgPrice changed by: {1}".format(
+            print("Total title now: {0}, AvgPrice changed by: £{1}".format(
                         self._totalBooks, round(self._avgPrice - oldAverage,2)))
 
     def _setTotalNumOfBooks(self):
@@ -131,45 +139,56 @@ class Store:
         self._avgPrice = round(average,2)
 
     def getAveragePriceOfBooks(self):
+        #Task 2
         #Returns an average price of the books
         print("-----------------------------------")
         print("The average price in Stock: £",self._avgPrice)
         print("-----------------------------------")
 
     def searchForTitle(self,title, orderBy='title'):
+        #Task 5
         #Print out he book for the given title
         listOfBooks = []
         for book in self._books:
             if title in book.title:
+                #if the title matches, append
                 listOfBooks.append(book)
         if len(listOfBooks) > 0:
+            #sort the listOfBooks[] based on book.title
             listOfBooks.sort(key = attrgetter(orderBy), reverse = False)
             counter = 1
             for i in listOfBooks:
+                #Assign an id to modify
+                #Render the booklist
                 print("Id-> {0}. ".format(counter),i)
                 counter += 1
             user = int(input("Enter ID to modify: ")) -1
             try:
                 if listOfBooks[user]:
+                    #confirmation on selected book
                     print("-------------")
                     print("Selected Book")
                     print("-------------")
                     print(listOfBooks[user])
                     print("-------------")
+                    #Okay, we have a valid book, pass it to modifyStock()
                     self.modifyStock(listOfBooks[user])
             except IndexError:
+                    #The Black Knight always triumphs! Have at you! Come on then.
                     print("Invalid Id...")
                     return False
         else:
             print('No Match')
 
     def searchForGenre(self, genre="All", orderBy='title'):
+        #Task 3
         #list out all the books of a specific genre
         print('--------------------------')
         print('Books for genre: ' + genre)
         print('--------------------------')
         if genre != "All":
             if genre not in self._genresInStore:
+                #None shall pass
                 print("Invalid Genre")
             else:
                 listOfBooks = []
@@ -181,11 +200,12 @@ class Store:
                     print(i)
         else:
             for genre in self._genresInStore:
-                print("{0} -> {1} books".format(
+                print("Genre: {0} Total Books: {1}".format(
                                     genre.title(),self._genresInStore[genre]))
 
     def listOfBooks(self, books=[], orderBy='title', totals=False):
-        #Listing out books by title, optional totals
+        #Task 1,6
+        #Listing out books by title, optional totals x3
         print('--------------------')
         print('List Of Books stored')
         print('--------------------')
@@ -203,20 +223,37 @@ class Store:
         #Modify the stock of the passed Book
         stock = int(input("Change [+Increase -Decrease]: "))
         if (stock + Book.stock) < 0:
+            #OutOfStockPrintMessage
             print("This book is not available anymore.")
-            Book.stock = 0
+            Book.stock = 0  #no negative numbers
         else:
+            #if some book still left, just update stock
             newStock = Book.stock + stock
             Book.stock = newStock
             print("The New Stock is: {0}".format(newStock))
-
+        #Update Store Values
         self._setTotalNumOfBooks()
-        #Update the Store's total value
         self._setTotalValueOfBooks()
         self._setAveragePriceOfBooks()
 
     def diagram(self):
-        pass
+        #Task 7
+        plt.rcdefaults()
+        #axis label and values
+        #[int,int,int]
+        numOfBooksPerGenre = []
+        #[str,str,str]
+        genreLables = []
+        for genre in self._genresInStore:
+            numOfBooksPerGenre.append(self._genresInStore[genre])
+            genreLables.append(genre)
+        y_pos = np.arange(len(genreLables))
+        #Build & show the chart
+        plt.bar(y_pos, numOfBooksPerGenre, align='center', alpha=0.5)
+        plt.xticks(y_pos, genreLables)
+        plt.ylabel('Number of Books')
+        plt.title('Title Breakdown by Genre')
+        plt.show()
 
 def mainMenu():
     #represent main menu
@@ -224,35 +261,47 @@ def mainMenu():
     print("BookStore API")
     print("-------------")
     print("1. List of books\n2. Average Price/Title\n3. NumOfBooks/Genre")
-    print("4. Add a book\n5. Modify Stock\n6. Ordered List by Genre")
+    print("4. Add a book\n5. Modify Stock\n6. Ordered List by Title")
     print("7. Diagram representation\n8. Exit")
     print("-------------------------")
 
 if __name__ == "__main__":
-    store = Store()
-    mainMenu()
-    user = ""
-    while user != "8":
-        user = input("Operation [1-8]?: ")
-        if user == "1":
-            store.listOfBooks(totals=True)
-            mainMenu()
-        elif user == "2":
-            store.getAveragePriceOfBooks()
-            mainMenu()
-        elif user == "3":
-            store.searchForGenre()
-            mainMenu()
-        elif user == "4":
-            store.userAddBook()
-            mainMenu()
-        elif user == "5":
-            query = input("Searching for books: ")
-            store.searchForTitle(query)
-            mainMenu()
-        elif user == "6":
-            store.diagram()
-            mainMenu()
-        else:
-            mainMenu()
-    print("Bye")
+    try:
+        #instantiate
+        store = Store()
+        #render main menu
+        mainMenu()
+        #user input
+        user = ""
+        while user != "8" or user != 'q':
+        #if user doesnt input 8 or q just keep rendering
+            user = input("Operation [1-8]?: ")
+            if user == "1":
+                store.listOfBooks(totals=True)
+                mainMenu()
+            elif user == "2":
+                store.getAveragePriceOfBooks()
+                mainMenu()
+            elif user == "3":
+                store.searchForGenre()
+                mainMenu()
+            elif user == "4":
+                store.userAddBook()
+                mainMenu()
+            elif user == "5":
+                query = input("Searching for books: ")
+                store.searchForTitle(query)
+                mainMenu()
+            elif user == "6":
+                store.listOfBooks([],'title')
+                mainMenu()
+            elif user == "7":
+                store.diagram()
+                mainMenu()
+            elif user == "8":
+                break;
+            else:
+                mainMenu()
+        print("Bye")
+    except KeyboardInterrupt:
+        print('Bye')
